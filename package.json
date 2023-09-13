@@ -4,6 +4,7 @@
   "description": "Simple logger to wrap console and keep track of latest logs",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
+  "private": false,
   "types": "lib/typescript/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
