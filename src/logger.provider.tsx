@@ -54,9 +54,12 @@ export const LoggerProvider: React.FC<LoggerProviderProps> = ({ children }) => {
   const loggersMap = useRef(new Map<string, LoggerMethods>());
 
   const addLog = ({ context, level, message, params = [] }: AddLogParams) => {
-    const fullMessage = `[${level.toUpperCase()}] ${message} ${
-      JSON.stringify(params) ?? ''
-    }`;
+    // Remove first '[' and last ']' from stringified params
+    const sParams = JSON.stringify(params)
+      .replace(/^\[/, '')
+      .replace(/\]$/, '');
+
+    const fullMessage = `[${level.toUpperCase()}] ${message} ${sParams ?? ''}`;
     const newLog: LogEntry = {
       message: fullMessage,
       context,
@@ -68,19 +71,19 @@ export const LoggerProvider: React.FC<LoggerProviderProps> = ({ children }) => {
       const messageWithContext = `[${context}] ${message}`;
       switch (level) {
         case 'debug':
-          console.debug(messageWithContext, params.length > 0 ? params : '');
+          console.debug(messageWithContext, ...params);
           break;
         case 'info':
-          console.info(messageWithContext, params.length > 0 ? params : '');
+          console.info(messageWithContext, ...params);
           break;
         case 'warn':
-          console.warn(messageWithContext, params.length > 0 ? params : '');
+          console.warn(messageWithContext, ...params);
           break;
         case 'error':
-          console.error(messageWithContext, params.length > 0 ? params : '');
+          console.error(messageWithContext, ...params);
           break;
         default:
-          console.log(messageWithContext, params.length > 1 ? params : '');
+          console.log(messageWithContext, ...params);
           break;
       }
     }
