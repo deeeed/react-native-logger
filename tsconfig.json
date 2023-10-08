@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "react-native-logger": ["./src/index"]
+      "@siteed/react-native-logger": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
