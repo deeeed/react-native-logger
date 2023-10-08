@@ -1,19 +1,55 @@
 import * as React from 'react';
+import {
+  LoggerProvider,
+  getLogger,
+  useLoggerActions,
+} from '@siteed/react-native-logger';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-logger';
+import { LogViewer } from './log-viewer';
+import { Button } from 'react-native-paper';
 
-export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+const outLogger = getLogger('out');
+outLogger.log('outLogger.log');
+
+const Other = () => {
+  const { logger } = useLoggerActions('Other');
+  return (
+    <View>
+      <Text>Other Component</Text>
+      <Button mode="outlined" onPress={() => logger.log('Button pressed')}>
+        Other Press Button
+      </Button>
+    </View>
+  );
+};
+export function App() {
+  const { logger } = useLoggerActions('App');
 
   React.useEffect(() => {
-    multiply(3, 7).then(setResult);
-  }, []);
+    logger.debug(`App mounted`, [1], 2, [3]);
+  }, [logger]);
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Check logs...</Text>
+      <Other />
+      <Button mode="outlined" onPress={() => logger.debug('Button pressed')}>
+        Press me
+      </Button>
+      <LogViewer />
     </View>
+  );
+}
+
+export default function WithLogger() {
+  return (
+    <SafeAreaProvider>
+      <LoggerProvider>
+        <App />
+      </LoggerProvider>
+    </SafeAreaProvider>
   );
 }
 

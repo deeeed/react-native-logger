@@ -1,11 +1,5 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from 'react';
 import type { ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 
 interface LogEntry {
   message: string;
@@ -44,87 +38,84 @@ const LoggerStateContext = createContext<
   | undefined
 >(undefined);
 
+const loggersMap = new Map<string, LoggerMethods>();
+let logsArray: LogEntry[] = [];
+
+const addLog = ({ context, level, message, params = [] }: AddLogParams) => {
+  // Remove first '[' and last ']' from stringified params
+  const sParams = JSON.stringify(params).replace(/^\[/, '').replace(/\]$/, '');
+
+  const fullMessage = `[${level.toUpperCase()}] ${message} ${sParams ?? ''}`;
+  const newLog: LogEntry = {
+    message: fullMessage,
+    context,
+    timestamp: new Date(),
+  };
+  logsArray = [...logsArray, newLog];
+
+  if (__DEV__) {
+    const messageWithContext = `[${context}] ${message}`;
+    switch (level) {
+      case 'debug':
+        console.debug(messageWithContext, ...params);
+        break;
+      case 'info':
+        console.info(messageWithContext, ...params);
+        break;
+      case 'warn':
+        console.warn(messageWithContext, ...params);
+        break;
+      case 'error':
+        console.error(messageWithContext, ...params);
+        break;
+      default:
+        console.log(messageWithContext, ...params);
+        break;
+    }
+  }
+};
+
+export const getLogger = (context: string) => {
+  if (loggersMap.has(context)) {
+    return loggersMap.get(context)!;
+  }
+
+  const logger = {
+    log: (message: string, ...params: unknown[]) =>
+      addLog({ context, level: 'log', message, params }),
+    info: (message: string, ...params: unknown[]) =>
+      addLog({ context, level: 'info', message, params }),
+    debug: (message: string, ...params: unknown[]) =>
+      addLog({ context, level: 'debug', message, params }),
+    warn: (message: string, ...params: unknown[]) =>
+      addLog({ context, level: 'warn', message, params }),
+    error: (message: string, ...params: unknown[]) =>
+      addLog({ context, level: 'error', message, params }),
+  };
+
+  loggersMap.set(context, logger);
+  return logger;
+};
+
 interface LoggerProviderProps {
   children: ReactNode;
 }
 
 export const LoggerProvider: React.FC<LoggerProviderProps> = ({ children }) => {
-  const logsRef = useRef<LogEntry[]>([]);
-  const [, forceUpdate] = useState({});
-  const loggersMap = useRef(new Map<string, LoggerMethods>());
-
-  const addLog = ({ context, level, message, params = [] }: AddLogParams) => {
-    // Remove first '[' and last ']' from stringified params
-    const sParams = JSON.stringify(params)
-      .replace(/^\[/, '')
-      .replace(/\]$/, '');
-
-    const fullMessage = `[${level.toUpperCase()}] ${message} ${sParams ?? ''}`;
-    const newLog: LogEntry = {
-      message: fullMessage,
-      context,
-      timestamp: new Date(),
-    };
-    logsRef.current = [newLog, ...logsRef.current];
-
-    if (__DEV__) {
-      const messageWithContext = `[${context}] ${message}`;
-      switch (level) {
-        case 'debug':
-          console.debug(messageWithContext, ...params);
-          break;
-        case 'info':
-          console.info(messageWithContext, ...params);
-          break;
-        case 'warn':
-          console.warn(messageWithContext, ...params);
-          break;
-        case 'error':
-          console.error(messageWithContext, ...params);
-          break;
-        default:
-          console.log(messageWithContext, ...params);
-          break;
-      }
-    }
-  };
-
-  const getLogger = (context: string) => {
-    if (loggersMap.current.has(context)) {
-      return loggersMap.current.get(context)!;
-    }
-
-    const logger = {
-      log: (message: string, ...params: unknown[]) =>
-        addLog({ context, level: 'log', message, params }),
-      info: (message: string, ...params: unknown[]) =>
-        addLog({ context, level: 'info', message, params }),
-      debug: (message: string, ...params: unknown[]) =>
-        addLog({ context, level: 'debug', message, params }),
-      warn: (message: string, ...params: unknown[]) =>
-        addLog({ context, level: 'warn', message, params }),
-      error: (message: string, ...params: unknown[]) =>
-        addLog({ context, level: 'error', message, params }),
-    };
-
-    loggersMap.current.set(context, logger);
-    return logger;
-  };
+  const [logs, setLogs] = useState<LogEntry[]>(logsArray);
 
   const refreshLogs = useCallback(() => {
-    forceUpdate({});
+    setLogs(logsArray);
   }, []);
 
   const clearLogs = () => {
-    logsRef.current = [];
+    logsArray = [];
     refreshLogs(); // Trigger a re-render after clearing logs
   };
 
   return (
     <LoggerActionsContext.Provider value={{ getLogger, clearLogs }}>
-      <LoggerStateContext.Provider
-        value={{ logs: logsRef.current, refreshLogs }}
-      >
+      <LoggerStateContext.Provider value={{ logs, refreshLogs }}>
         {children}
       </LoggerStateContext.Provider>
     </LoggerActionsContext.Provider>
