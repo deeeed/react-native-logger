@@ -46,6 +46,11 @@ export default WithLogger
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
 
+## Try it out
+```bash
+yarn example web
+```
+
 ## License
 
 MIT
