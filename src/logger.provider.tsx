@@ -122,6 +122,24 @@ export const LoggerProvider: React.FC<LoggerProviderProps> = ({ children }) => {
   );
 };
 
+export const useLogger = (
+  context: string
+): {
+  logger: LoggerMethods;
+  clearLogs: () => void;
+} => {
+  const loggerContext = useContext(LoggerActionsContext);
+  if (!loggerContext) {
+    throw new Error('useLogger must be used within a LoggerProvider');
+  }
+  const logger = loggerContext.getLogger(context);
+  return {
+    logger,
+    clearLogs: loggerContext.clearLogs,
+  };
+};
+
+// @deprecated use useLogger instead
 export const useLoggerActions = (
   context: string
 ): {
@@ -129,6 +147,8 @@ export const useLoggerActions = (
   clearLogs: () => void;
 } => {
   const loggerContext = useContext(LoggerActionsContext);
+  console.warn(`useLoggerActions is deprecated, use useLogger instead`);
+
   if (!loggerContext) {
     throw new Error('useLoggerActions must be used within a LoggerProvider');
   }

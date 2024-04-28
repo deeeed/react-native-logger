@@ -11,8 +11,9 @@ npm install react-native-logger
 ## Usage
 
 ```js
-import { LoggerProvider, useLoggerActions } from '@siteed/react-native-logger'
+import { LoggerProvider, useLoggerActions, getLogger } from '@siteed/react-native-logger'
 
+// To use outside react component, you can call getLogger directly
 const outLogger = getLogger(`out`);
 outLogger.debug(`This is a debug message`);
 outLogger.info(`This is an info message`);
