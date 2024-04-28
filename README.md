@@ -11,7 +11,7 @@ npm install react-native-logger
 ## Usage
 
 ```js
-import { LoggerProvider, useLoggerActions, getLogger } from '@siteed/react-native-logger'
+import { LoggerProvider, useLogger, getLogger } from '@siteed/react-native-logger'
 
 // To use outside react component, you can call getLogger directly
 const outLogger = getLogger(`out`);
@@ -21,7 +21,7 @@ outLogger.warn(`This is a warning message`);
 outLogger.error(`This is an error message`);
 
 const App = () => {
-  const { logger } = useLoggerActions('App')
+  const { logger } = useLogger('App')
   useEffect( () => {
     logger.log(`App mounted`)
   })

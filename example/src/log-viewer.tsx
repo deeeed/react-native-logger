@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTheme, Button, type MD3Theme } from 'react-native-paper';
-import { useLoggerActions, useLoggerState } from '@siteed/react-native-logger';
+import { useLogger, useLoggerState } from '@siteed/react-native-logger';
 
 export interface LogViewerProps {}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const LogViewer = (props: LogViewerProps) => {
-  const { clearLogs } = useLoggerActions('log-viewer');
+  const { clearLogs } = useLogger('log-viewer');
   const { logs, refreshLogs } = useLoggerState();
   const theme = useTheme();
   const styles = useMemo(() => getStyles({ theme }), [theme]);

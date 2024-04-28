@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   LoggerProvider,
   getLogger,
-  useLoggerActions,
+  useLogger,
 } from '@siteed/react-native-logger';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -14,7 +14,7 @@ const outLogger = getLogger('out');
 outLogger.log('outLogger.log');
 
 const Other = () => {
-  const { logger } = useLoggerActions('Other');
+  const { logger } = useLogger('Other');
   return (
     <View>
       <Text>Other Component</Text>
@@ -25,7 +25,7 @@ const Other = () => {
   );
 };
 export function App() {
-  const { logger } = useLoggerActions('App');
+  const { logger } = useLogger('App');
 
   React.useEffect(() => {
     logger.debug(`App mounted`, [1], 2, [3]);
