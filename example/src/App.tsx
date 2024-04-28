@@ -17,9 +17,8 @@ const Other = () => {
   const { logger } = useLogger('Other');
   return (
     <View>
-      <Text>Other Component</Text>
       <Button mode="outlined" onPress={() => logger.log('Button pressed')}>
-        Other Press Button
+        Other Component Button
       </Button>
     </View>
   );
@@ -36,7 +35,7 @@ export function App() {
       <Text>Check logs...</Text>
       <Other />
       <Button mode="outlined" onPress={() => logger.debug('Button pressed')}>
-        Press me
+        App Component Button
       </Button>
       <LogViewer />
     </View>
@@ -55,7 +54,9 @@ export default function WithLogger() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 30,
     flex: 1,
+    gap: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
